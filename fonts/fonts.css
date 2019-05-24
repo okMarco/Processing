@@ -1,0 +1,15 @@
+@font-face{
+  font-family: 'Source Sans Pro';
+  src : url('./SourceSansPro-Regular_gdi.woff');
+  font-weight: normal;
+}
+@font-face{
+  font-family: 'Source Sans Pro';
+  src : url('./SourceSansPro-Semibold_gdi.woff');
+  font-weight: bold;
+}
+@font-face{
+  font-family: 'Source Sans Pro';
+  src : url('./SourceSansPro-Black_gdi.woff');
+  font-weight: 900;
+}

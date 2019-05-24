@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Processing</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <link rel="stylesheet" type="text/css" href="./fonts/fonts.css">
+    <style type="text/css">
+      h1, h2, h3, h4, h5, h6, p {
+        font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+      h1 {
+        font-size: 5rem;
+        text-align: center;
+        font-weight: 900;
+      }
+      h2 {
+        font-size: 1.2rem;
+        padding-left: 10px;
+        padding-right: 10px;
+        font-weight: bold;
+      }
+      a {
+        color: rgb(0, 0, 0);
+      }
+      p {
+        display: block;
+        font-weight: normal;
+      }
+      #processing-projects {
+        display: flex;
+        flex-direction: row;
+        text-align: center;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .project a {
+        display: inline-block;
+        text-decoration: none;
+        transition: color 0.25s, transform 0.25s;
+        -moz-transition: color 0.25s, transform 0.25s;	/* Firefox 4 */
+        -webkit-transition: color 0.25s, transform 0.25s;	/* Safari 和 Chrome */
+        -o-transition: color 0.25s, transform 0.25s;	/* Opera */
+      }
+      .project:hover a {
+        color: #FF9633;
+        transform: translate(0px, -2px);
+        -ms-transform: translate(0px, -2px);		/* IE 9 */
+        -webkit-transform: translate(0px, -2px);	/* Safari and Chrome */
+        -o-transform: translate(0px, -2px);		/* Opera */
+        -moz-transform: translate(0px, -2px);		/* Firefox */
+      }
+      .author {
+        font-weight: bold;
+        color: #6b6b6b;
+        text-align: center;
+        font-size: 1rem;
+        margin-top: 100px;
+      }
+      .author p {
+        margin: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1 v-bind:style="style" v-on:mouseOver="mouseOverTitle" v-on:mouseOut="mouseOutTitle" id="header-title">Processing</h1>
+      </div>
+    </header>
+    <div id="processing-projects">
+      <template v-for="project in projects">
+        <h2 class="project" v-bind:title="project.description">
+          <a v-bind:href="project.url" target="_blank">{{ project.name }}</a>
+        </h2>
+      </template>
+    </div>
+    <div class="author">
+      <p><strong>OkMarco</strong></p>
+      <p>Made in DongGuan.</p>
+    </div>
+
+    <script type="text/javascript">
+      var app = new Vue({
+        el: '#processing-projects',
+        data: {
+          projects: [
+            {description : '流星', name : 'Starfield', url : './starfield/starfield.html'},
+            {description : '立方体', name : 'Menger Sponge Fractal', url : './menger-sponge-fractal/menger-sponge-fractal.html'},
+            {description : '贪吃蛇', name : 'Snake Game', url : './snake-game/snake-game.html'}
+          ]
+        }
+      })
+      new Vue({
+        el: '#header-title',
+        data: {
+          colorIndex : 0,
+          colors : ['#000000', '#F29A2F', '#56BB89', '#4BA8D8', '#D95F41', '#D5378D'],
+          style: {
+            color : '#000000'
+          },
+          mouseOver: false
+        },
+        methods: {
+          mouseOverTitle: function (event) {
+            this.mouseOver = true;
+            //this.changeTitleColor();
+          },
+          changeTitleColor: function () {
+            var currentIndex = Math.floor(this.colorIndex);
+            var nextIndex = currentIndex + 1;
+            var index = Math.floor((this.colorIndex - currentIndex) * 10);
+            if (nextIndex >= this.colors.length) {
+              nextIndex = 1;
+            }
+
+            if (!this.mouseOver) {
+              nextIndex = 0;
+            }
+            var newColor = new gradientColor(this.colors[currentIndex], this.colors[nextIndex], index);
+            this.style.color = newColor.color;
+            this.colorIndex += 0.1;
+            if (this.colorIndex >= this.colors.length) {
+              this.colorIndex = 1;
+            }
+            if (this.mouseOver || index < 9) {
+              setTimeout(this.changeTitleColor, 150);
+            }
+          },
+          mouseOutTitle: function (event) {
+            this.mouseOver = false;
+          }
+        }
+      })
+
+      function gradientColor(startColor, endColor, i) {
+        var step = 10;
+        startRGB = this.colorRgb(startColor);//转换为rgb数组模式
+        startR = startRGB[0];
+        startG = startRGB[1];
+        startB = startRGB[2];
+        endRGB = this.colorRgb(endColor);
+        endR = endRGB[0];
+        endG = endRGB[1];
+        endB = endRGB[2];
+        sR = (endR-startR) / step;//总差值
+        sG = (endG-startG) / step;
+        sB = (endB-startB) / step;
+        this.color = this.colorHex('rgb('+parseInt((sR*i+startR))+','+parseInt((sG*i+startG))+','+parseInt((sB*i+startB))+')');
+      }
+
+      // 将hex表示方式转换为rgb表示方式(这里返回rgb数组模式)
+      gradientColor.prototype.colorRgb = function(sColor){
+        var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+        var sColor = sColor.toLowerCase();
+        if(sColor && reg.test(sColor)){
+          if(sColor.length === 4){
+            var sColorNew = "#";
+            for(var i=1; i<4; i+=1){
+              sColorNew += sColor.slice(i,i+1).concat(sColor.slice(i,i+1));
+            }
+            sColor = sColorNew;
+          }
+          //处理六位的颜色值
+          var sColorChange = [];
+          for(var i=1; i<7; i+=2){
+            sColorChange.push(parseInt("0x"+sColor.slice(i,i+2)));
+          }
+          return sColorChange;
+        }else{
+          return sColor;
+        }
+      }
+
+      // 将rgb表示方式转换为hex表示方式
+      gradientColor.prototype.colorHex = function(rgb){
+        var _this = rgb;
+        var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+        if(/^(rgb|RGB)/.test(_this)){
+          var aColor = _this.replace(/(?:(|)|rgb|RGB)*/g,"").split(",");
+          var strHex = "#";
+          for(var i=0; i<aColor.length; i++){
+            var hex = Number(aColor[i]).toString(16);
+            hex = hex<10 ? 0+''+hex :hex;// 保证每个rgb的值为2位
+            if(hex === "0"){
+              hex += hex;
+            }
+            strHex += hex;
+          }
+          if(strHex.length !== 7){
+            strHex = _this;
+          }
+          return strHex;
+        }else if(reg.test(_this)){
+          var aNum = _this.replace(/#/,"").split("");
+          if(aNum.length === 6){
+            return _this;
+          }else if(aNum.length === 3){
+            var numHex = "#";
+            for(var i=0; i<aNum.length; i+=1){
+              numHex += (aNum[i]+aNum[i]);
+            }
+            return numHex;
+          }
+        }else{
+          return _this;
+        }
+      }
+    </script>
+  </body>
+</html>
